@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: ¿Cuál es tu Superpoder?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        /* Neon Glow Effects */
+        .glow-red { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+        .glow-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        .glow-green { box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
+        .glow-yellow { box-shadow: 0 0 15px rgba(234, 179, 8, 0.5); }
+
+        .btn-option {
+            transition: all 0.3s ease;
+        }
+        .btn-option:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.5s ease-in forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div id="app-container" class="w-full max-w-2xl bg-neutral-900 border border-neutral-800 rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
+        
+        <!-- Decoraciones de fondo -->
+        <div class="absolute top-[-50px] left-[-50px] w-32 h-32 bg-red-500 rounded-full mix-blend-screen filter blur-[70px] opacity-20 pointer-events-none"></div>
+        <div class="absolute bottom-[-50px] right-[-50px] w-32 h-32 bg-blue-500 rounded-full mix-blend-screen filter blur-[70px] opacity-20 pointer-events-none"></div>
+
+        <!-- PANTALLA 1: FORMULARIO -->
+        <div id="screen-intro" class="fade-in relative z-10">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-center mb-2 uppercase tracking-wider">
+                Descubre tu <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-red-500 to-blue-500">Superpoder</span>
+            </h1>
+            <p class="text-neutral-400 text-center mb-8">Completa tus datos para comenzar el test.</p>
+
+            <form id="user-form" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold mb-2 text-yellow-400">Nombre Completo</label>
+                    <input type="text" id="userName" required class="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-colors" placeholder="Ej. Juan Pérez">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2 text-green-400">Edad</label>
+                    <input type="number" id="userAge" required min="10" max="99" class="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400 transition-colors" placeholder="Ej. 18">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2 text-blue-400">Nombre de tu Líder</label>
+                    <input type="text" id="userLeader" required class="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-colors" placeholder="Ej. María Gómez">
+                </div>
+                <button type="submit" class="w-full mt-6 bg-gradient-to-r from-red-600 to-blue-600 hover:from-red-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg transform transition hover:scale-[1.02]">
+                    EMPEZAR TEST
+                </button>
+            </form>
+        </div>
+
+        <!-- PANTALLA 2: TEST -->
+        <div id="screen-quiz" class="hidden relative z-10">
+            <div class="flex justify-between items-center mb-6">
+                <span id="question-counter" class="text-neutral-400 font-semibold bg-neutral-800 px-4 py-1 rounded-full text-sm">Pregunta 1/10</span>
+                <div class="flex space-x-1">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                </div>
+            </div>
+
+            <h2 id="question-text" class="text-xl md:text-2xl font-bold mb-8 text-white min-h-[4rem]">
+                Cargando pregunta...
+            </h2>
+
+            <div id="options-container" class="space-y-4">
+                <!-- Opciones se inyectan por JS -->
+            </div>
+        </div>
+
+        <!-- PANTALLA 3: RESULTADOS -->
+        <div id="screen-result" class="hidden text-center fade-in relative z-10">
+            <h2 class="text-2xl font-bold text-neutral-400 mb-2">Tu superpoder es...</h2>
+            <div class="py-6">
+                <h1 id="result-title" class="text-5xl md:text-6xl font-extrabold uppercase mb-4 tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-400">
+                    RESULTADO
+                </h1>
+                <p id="result-desc" class="text-lg text-neutral-300 px-4">
+                    Descripción del superpoder aquí.
+                </p>
+            </div>
+            
+            <div class="mt-6 flex flex-col space-y-3 px-4">
+                <p class="text-sm text-neutral-400 mb-2">Comparte tus resultados:</p>
+                
+                <button onclick="shareViaWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#1ebd5a] text-white font-bold py-3 rounded-xl shadow-lg transform transition hover:scale-[1.02] flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                    </svg>
+                    Enviar a WhatsApp
+                </button>
+
+                <button id="btn-copy" onclick="copyToClipboard()" class="w-full bg-neutral-800 hover:bg-neutral-700 border border-neutral-600 text-white font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                    </svg>
+                    <span>Copiar mis resultados</span>
+                </button>
+            </div>
+
+            <button onclick="location.reload()" class="mt-8 px-6 py-2 text-sm text-neutral-400 hover:text-white underline transition-colors">
+                Volver a intentar el test
+            </button>
+        </div>
+
+    </div>
+
+    <!-- LÓGICA DE LA APLICACIÓN -->
+    <script>
+        // --- BASE DE DATOS DE PREGUNTAS (Extraídas del PDF) ---
+        const questions = [
+            {
+                text: "En el colegio/universidad, ¿cuál es tu materia o actividad favorita?",
+                options: [
+                    { letter: 'A', text: "Arte, Música o Literatura.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Matemáticas, Programación o Física.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Ética, Biología, Política o Sociales.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Idiomas, Debate o Teatro.", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "Si ves que un amigo está pasando por un mal momento, ¿cómo reaccionas?",
+                options: [
+                    { letter: 'A', text: "Le haces una playlist, un dibujo o le escribes algo que lo inspire.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Le ayudas a pensar en pasos prácticos para resolver su problema.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Vas a su casa, lo escuchas por horas y lo acompañas.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Le dices las palabras exactas que necesita oír para recuperar el ánimo.", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "Imagina que el grupo de conexión va a organizar un campamento. ¿Qué es lo primero que te ofreces a hacer?",
+                options: [
+                    { letter: 'A', text: "Diseñar el logo, las camisetas y el video promocional.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Armar el presupuesto, los horarios y la logística de transporte.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Estar pendiente de los que van por primera vez o se sienten solos.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Encargarte de animar las reuniones y convencer a todos de que vayan.", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "¿Qué tipo de videojuegos o aplicaciones prefieres?",
+                options: [
+                    { letter: 'A', text: "Los de construcción, diseño de mundos o edición de fotos/video.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Los de estrategia, rompecabezas o gestión de recursos.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Los de rol donde hay que salvar personas o simuladores de vida.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Las redes sociales o juegos multijugador donde hay que hablar mucho.", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "Qué es lo que más te duele del mundo",
+                options: [
+                    { letter: 'A', text: "Que a veces es muy aburrido y gris.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Que es desordenado y caótico.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Que es un lugar injusto y enfermo.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Que es un lugar dividido, donde existe el odio y las peleas.", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "¿Cuál es tu red social favorita (por cómo la usas)?",
+                options: [
+                    { letter: 'A', text: "Pinterest o Instagram (por la estética y las ideas).", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "YouTube (para tutoriales de cómo funcionan las cosas).", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "WhatsApp (para estar en contacto uno a uno y ayudar a otros).", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Tik Tok o X/Twitter (para dar mi opinión o compartir noticias).", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "Cuando entras a una habitación llena de gente desconocida...",
+                options: [
+                    { letter: 'A', text: "Observas los detalles de la decoración o el estilo de la gente.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Analizas cómo está organizado el evento y si algo falta.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Buscas a alguien que parezca tímido para hacerlo sentir cómodo.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Saludas a varias personas y empiezas una conversación.", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "Si te dan una caja llena de piezas de LEGO, tú:",
+                options: [
+                    { letter: 'A', text: "Haces algo artístico que nadie más ha imaginado.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Sigues las instrucciones al pie de la letra para que quede perfecto.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Construyes una casa u hospital para los personajes.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Inventas una historia sobre lo que está pasando entre las figuras.", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "¿Qué frase te define mejor?",
+                options: [
+                    { letter: 'A', text: "Me encanta dar vida a nuevas ideas.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Me gusta que las cosas funcionen bien.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Mi prioridad es que las personas estén bien.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Me apasiona conectar a la gente con la verdad.", type: "COMUNICADORES", color: "red" }
+                ]
+            },
+            {
+                text: "¿Cómo crees que puedes servir mejor a Dios en un trabajo 'normal'?",
+                options: [
+                    { letter: 'A', text: "Reflejando Su creatividad a través de la excelencia.", type: "CREADORES", color: "yellow" },
+                    { letter: 'B', text: "Reflejando Su orden a través de la buena administración.", type: "SOLUCIONADORES", color: "blue" },
+                    { letter: 'C', text: "Reflejando Su amor a través del cuidado de los demás.", type: "PROTECTORES", color: "green" },
+                    { letter: 'D', text: "Reflejando Su mensaje a través de la enseñanza de la Biblia y mi testimonio personal.", type: "COMUNICADORES", color: "red" }
+                ]
+            }
+        ];
+
+        // --- VARIABLES DE ESTADO ---
+        let currentQuestion = 0;
+        let userAnswers = { A: 0, B: 0, C: 0, D: 0 };
+        let userData = { nombre: '', edad: '', lider: '' };
+        let superPoderFinal = '';
+
+        // --- REFERENCIAS DOM ---
+        const form = document.getElementById('user-form');
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const screenResult = document.getElementById('screen-result');
+        const questionCounter = document.getElementById('question-counter');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        // --- INICIAR TEST ---
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            userData.nombre = document.getElementById('userName').value;
+            userData.edad = document.getElementById('userAge').value;
+            userData.lider = document.getElementById('userLeader').value;
+
+            screenIntro.classList.add('hidden');
+            screenQuiz.classList.remove('hidden');
+            screenQuiz.classList.add('fade-in');
+            
+            renderQuestion();
+        });
+
+        // --- RENDERIZAR PREGUNTA ---
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            questionCounter.innerText = `Pregunta ${currentQuestion + 1}/${questions.length}`;
+            questionText.innerText = q.text;
+            
+            optionsContainer.innerHTML = ''; // Limpiar opciones
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                
+                let colorClasses = '';
+                if(opt.color === 'yellow') colorClasses = 'border-yellow-500 hover:bg-yellow-500/20 hover:glow-yellow text-yellow-100';
+                if(opt.color === 'blue') colorClasses = 'border-blue-500 hover:bg-blue-500/20 hover:glow-blue text-blue-100';
+                if(opt.color === 'green') colorClasses = 'border-green-500 hover:bg-green-500/20 hover:glow-green text-green-100';
+                if(opt.color === 'red') colorClasses = 'border-red-500 hover:bg-red-500/20 hover:glow-red text-red-100';
+
+                btn.className = `btn-option w-full text-left p-4 md:p-5 rounded-2xl border-2 bg-neutral-800/50 backdrop-blur-sm ${colorClasses} font-semibold text-sm md:text-base`;
+                btn.innerText = opt.text;
+                
+                btn.onclick = () => handleAnswer(opt.letter);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // --- MANEJAR RESPUESTA ---
+        function handleAnswer(letter) {
+            userAnswers[letter]++;
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                screenQuiz.classList.remove('fade-in');
+                void screenQuiz.offsetWidth; 
+                screenQuiz.classList.add('fade-in');
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // --- MOSTRAR RESULTADOS ---
+        function showResults() {
+            screenQuiz.classList.add('hidden');
+            screenResult.classList.remove('hidden');
+
+            let maxCount = 0;
+            let finalResult = 'A';
+            
+            for (const [letter, count] of Object.entries(userAnswers)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    finalResult = letter;
+                }
+            }
+
+            const titleEl = document.getElementById('result-title');
+            const descEl = document.getElementById('result-desc');
+
+            switch(finalResult) {
+                case 'A':
+                    superPoderFinal = 'CREADORES';
+                    titleEl.className = "text-5xl md:text-6xl font-extrabold uppercase mb-4 tracking-widest text-yellow-400 glow-yellow drop-shadow-lg";
+                    descEl.innerText = "¡Tu mente es un lienzo! Tu superpoder es la creatividad, el arte, y darle vida a nuevas ideas con excelencia.";
+                    break;
+                case 'B':
+                    superPoderFinal = 'SOLUCIONADORES';
+                    titleEl.className = "text-5xl md:text-6xl font-extrabold uppercase mb-4 tracking-widest text-blue-400 glow-blue drop-shadow-lg";
+                    descEl.innerText = "¡El caos te teme! Tu superpoder es el orden, la lógica y encontrar soluciones prácticas donde otros ven problemas.";
+                    break;
+                case 'C':
+                    superPoderFinal = 'PROTECTORES';
+                    titleEl.className = "text-5xl md:text-6xl font-extrabold uppercase mb-4 tracking-widest text-green-400 glow-green drop-shadow-lg";
+                    descEl.innerText = "¡Eres un escudo para los demás! Tu superpoder es la empatía, el cuidado y reflejar amor a quienes más lo necesitan.";
+                    break;
+                case 'D':
+                    superPoderFinal = 'COMUNICADORES';
+                    titleEl.className = "text-5xl md:text-6xl font-extrabold uppercase mb-4 tracking-widest text-red-500 glow-red drop-shadow-lg";
+                    descEl.innerText = "¡Tu voz tiene impacto! Tu superpoder es conectar, transmitir mensajes con claridad y liderar a través de las palabras.";
+                    break;
+            }
+
+            titleEl.innerText = superPoderFinal;
+        }
+
+        // --- FUNCIONES PARA COMPARTIR ---
+        function getShareText() {
+            return `¡Hola! Acabo de hacer el Test de Superpoderes. 🚀\n\n*Mis datos:*\n👤 Nombre: ${userData.nombre}\n🎂 Edad: ${userData.edad}\n👑 Líder: ${userData.lider}\n\n✨ *Mi Superpoder es: ${superPoderFinal}* ✨`;
+        }
+
+        function shareViaWhatsApp() {
+            const text = getShareText();
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        function copyToClipboard() {
+            const text = getShareText();
+            const btn = document.getElementById('btn-copy');
+            const span = btn.querySelector('span');
+            const originalText = span.innerText;
+
+            // Método seguro de copiado
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                // Efecto visual de éxito
+                btn.classList.remove('bg-neutral-800');
+                btn.classList.add('bg-green-600', 'border-green-500');
+                span.innerText = "¡Copiado con éxito!";
+                
+                setTimeout(() => {
+                    btn.classList.remove('bg-green-600', 'border-green-500');
+                    btn.classList.add('bg-neutral-800');
+                    span.innerText = originalText;
+                }, 3000);
+            } catch (err) {
+                console.error('No se pudo copiar', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html>
