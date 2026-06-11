@@ -103,7 +103,7 @@
         <div id="screen-result" class="hidden text-center fade-in relative z-10">
             <h2 class="text-2xl font-bold text-neutral-400 mb-2">Tu superpoder es...</h2>
             <div class="py-6">
-                <h1 id="result-title" class="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-normal sm:tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-400 break-words hyphens-auto" lang="es">
+                <h1 id="result-title" class="text-xl min-[400px]:text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-tight sm:tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-400" lang="es">
                     RESULTADO
                 </h1>
                 <p id="result-desc" class="text-lg text-neutral-300 px-4">
@@ -322,22 +322,22 @@
             switch(finalResult) {
                 case 'A':
                     superPoderFinal = 'CREADORES';
-                    titleEl.className = "text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-normal sm:tracking-widest text-yellow-400 glow-yellow drop-shadow-lg break-words hyphens-auto";
+                    titleEl.className = "text-xl min-[400px]:text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-tight sm:tracking-widest text-yellow-400 glow-yellow drop-shadow-lg";
                     descEl.innerText = "¡Tu mente es un lienzo! Tu superpoder es la creatividad, el arte, y darle vida a nuevas ideas con excelencia.";
                     break;
                 case 'B':
                     superPoderFinal = 'SOLUCIONADORES';
-                    titleEl.className = "text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-normal sm:tracking-widest text-blue-400 glow-blue drop-shadow-lg break-words hyphens-auto";
+                    titleEl.className = "text-xl min-[400px]:text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-tight sm:tracking-widest text-blue-400 glow-blue drop-shadow-lg";
                     descEl.innerText = "¡El caos te teme! Tu superpoder es el orden, la lógica y encontrar soluciones prácticas donde otros ven problemas.";
                     break;
                 case 'C':
                     superPoderFinal = 'PROTECTORES';
-                    titleEl.className = "text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-normal sm:tracking-widest text-green-400 glow-green drop-shadow-lg break-words hyphens-auto";
+                    titleEl.className = "text-xl min-[400px]:text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-tight sm:tracking-widest text-green-400 glow-green drop-shadow-lg";
                     descEl.innerText = "¡Eres un escudo para los demás! Tu superpoder es la empatía, el cuidado y reflejar amor a quienes más lo necesitan.";
                     break;
                 case 'D':
                     superPoderFinal = 'COMUNICADORES';
-                    titleEl.className = "text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-normal sm:tracking-widest text-red-500 glow-red drop-shadow-lg break-words hyphens-auto";
+                    titleEl.className = "text-xl min-[400px]:text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold uppercase mb-4 tracking-tight sm:tracking-widest text-red-500 glow-red drop-shadow-lg";
                     descEl.innerText = "¡Tu voz tiene impacto! Tu superpoder es conectar, transmitir mensajes con claridad y liderar a través de las palabras.";
                     break;
             }
@@ -347,7 +347,7 @@
 
         // --- FUNCIONES PARA COMPARTIR ---
         function getShareText() {
-            return `¡Hola! Acabo de hacer el Test de Superpoderes. 🚀\n\n*Mis datos:*\n👤 Nombre: ${userData.nombre}\n🎂 Edad: ${userData.edad}\n👑 Líder: ${userData.lider}\n\n✨ *Mi Superpoder es: ${superPoderFinal}* ✨`;
+            return `¡Hola! Acabo de hacer el Test de Superpoderes. 🚀\n\n*Mis datos:*\n👤 Nombre: ${userData.nombre}\n🎂 Edad: ${userData.edad}\n😊 Líder: ${userData.lider}\n\n✨ *Mi Superpoder es: ${superPoderFinal}* ✨`;
         }
 
         function shareViaWhatsApp() {
@@ -388,6 +388,4 @@
         }
     </script>
 </body>
-</html>
-</html>
 </html>
